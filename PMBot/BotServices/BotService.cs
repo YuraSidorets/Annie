@@ -22,7 +22,7 @@ namespace PMBot.BotServices
         {
             vk.Authorize(new ApiAuthParams
             {
-                ApplicationId = appID,
+                ApplicationId = , //appID,
                 Login = email,
                 Password = pass,
                 Settings = Settings.All
@@ -47,7 +47,6 @@ namespace PMBot.BotServices
         {
             LongPoolWatcher watcher = new LongPoolWatcher(vk);
             var pollServer = GetLongPollServer();
-
             watcher.StartAsync(pollServer.Ts, pollServer.Pts);
             watcher.NewMessages += Watcher_NewMessages;
         }
@@ -56,7 +55,7 @@ namespace PMBot.BotServices
         {
             foreach (var message in messages)
             {
-                BotLogic.Reply(vk,message,5); // 5 for Moie Uvogenie
+                BotLogic.Reply(vk,message, 5); // 5 for Moie Uvogenie 
             }
         }
     }

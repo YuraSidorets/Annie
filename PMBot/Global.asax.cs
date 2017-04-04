@@ -22,7 +22,7 @@ namespace PMBot
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
             BotService service = new BotService();
-            service.Authorize(0, login, password); //your bot page credentials
+            service.Authorize(0, , );
             Task.Run(() => service.ProcessMessages());
         }
     }
