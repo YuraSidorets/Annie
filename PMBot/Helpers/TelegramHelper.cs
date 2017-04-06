@@ -12,7 +12,7 @@ namespace PMBot.Helpers
 
         public static async void SendMessage()
         {
-            var Bot = new TelegramBotClient();
+            var Bot = new TelegramBotClient("");
             await Bot.SendTextMessageAsync("-138805831", "Vanya Wake Up");
         }
     }

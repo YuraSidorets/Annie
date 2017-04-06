@@ -13,23 +13,23 @@ using VkNetExtend;
 
 namespace PMBot.BotServices
 {
-    public class BotService
+    public static class BotService
     {
-        VkApi vk = new VkApi();
-        BotLogic BotLogic = new BotLogic();
+        static VkApi vk = new VkApi();
+        static BotLogic BotLogic = new BotLogic();
 
-        public void Authorize(ulong appID, string email, string pass)
+        public static void Authorize(ulong appID, string email, string pass, string token)
         {
             vk.Authorize(new ApiAuthParams
             {
+                AccessToken = token,
                 ApplicationId = , //appID,
                 Login = email,
                 Password = pass,
                 Settings = Settings.All
             });
         }
-
-        public IEnumerable<Message> GetMessages()
+        public static IEnumerable<Message> GetMessages()
         {
             return vk.Messages.Get(new MessagesGetParams()
             {
@@ -38,20 +38,24 @@ namespace PMBot.BotServices
             }).Messages;
         }
 
-        public LongPollServerResponse GetLongPollServer()
-        {
-            return vk.Messages.GetLongPollServer(true, true);
-        }
-
-        public void ProcessMessages()
+        public static void ProcessMessages()
         {
             LongPoolWatcher watcher = new LongPoolWatcher(vk);
-            var pollServer = GetLongPollServer();
+            LongPollServerResponse pollServer = null;
+            try
+            {
+                pollServer = vk.Messages.GetLongPollServer(true, true);
+
+            }
+            catch (Exception e)
+            {
+                throw e ;
+            }
             watcher.StartAsync(pollServer.Ts, pollServer.Pts);
             watcher.NewMessages += Watcher_NewMessages;
         }
 
-        private void Watcher_NewMessages(VkApi owner, ReadOnlyCollection<Message> messages)
+        private static void Watcher_NewMessages(VkApi owner, ReadOnlyCollection<Message> messages)
         {
             foreach (var message in messages)
             {
