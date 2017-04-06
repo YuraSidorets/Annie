@@ -39,7 +39,7 @@ namespace PMBot.Helpers
 
             if (message.Body.ToLower().Contains(@"\anya razbudi vanyu"))
             {
-                TelegramHelper.SendMessage();
+             //  TelegramHelper.SendMessage();
                 vkApi.Messages.Send(new MessagesSendParams()
                 {
                     ChatId = chatId,

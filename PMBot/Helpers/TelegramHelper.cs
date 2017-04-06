@@ -10,10 +10,10 @@ namespace PMBot.Helpers
     public static class TelegramHelper
     {
 
-        public static async void SendMessage()
+        public static async void SendMessage(string message)
         {
-            var Bot = new TelegramBotClient("");
-            await Bot.SendTextMessageAsync("-138805831", "Vanya Wake Up");
+            var Bot = new TelegramBotClient("250719418:AAEmTZ1OSFGOD38UaMhHfQvy47_6MYhYcds");
+            await Bot.SendTextMessageAsync("-138805831", message);
         }
     }
 }
