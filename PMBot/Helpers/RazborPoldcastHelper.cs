@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.ServiceModel.Syndication;
+using System.Text;
 using System.Web;
 using System.Xml;
 
@@ -12,6 +14,7 @@ namespace PMBot.Helpers
         public string CheckRss()
         {
             string url = "http://feeds.feedburner.com/razbor-podcast";
+
             XmlReader reader = XmlReader.Create(url);
             SyndicationFeed feed = SyndicationFeed.Load(reader);
             reader.Close();
@@ -20,7 +23,10 @@ namespace PMBot.Helpers
             if (feed != null)
             {
                 var last = feed.Items.FirstOrDefault();
-                output = last.Title.Text + "\n"+ last.PublishDate.Date.ToShortDateString() + "\n" + last.Id;
+                byte[] bytes = Encoding.Default.GetBytes(last.Title.Text);
+                var text = Encoding.GetEncoding("windows-1251").GetString(bytes);
+
+                output = text + "\n" + last.PublishDate.Date.ToShortDateString() + "\n" + last.Id;
             }
             return output;
         }

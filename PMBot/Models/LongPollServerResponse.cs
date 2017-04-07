@@ -6,10 +6,10 @@ namespace PMBot.Models
     {
 
         [JsonProperty("response")]
-        public Response Response { get; set; }
+        public ServerHistoryResponse Response { get; set; }
     }
 
-    public class Response
+    public class ServerHistoryResponse
     {
 
         [JsonProperty("key")]

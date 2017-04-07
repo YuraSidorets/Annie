@@ -12,23 +12,5 @@ namespace PMBot.Controllers
 {
     public class VkController : ApiController
     {
-        [EnableCors(origins: "*", headers: "*", methods: "*")]
-        [HttpPost]
-        [Route("vk/setLongPollServer")]
-        public void SetLongPollServer()
-        {
-            try
-            {
-                throw new Exception("In SetLPS method");
-                var response = Request.Content.ReadAsStringAsync().Result;
-                // BotServices.BotService.LongPollServer = response;
-                TelegramHelper.SendMessage(response);//.Response.Server);
-            }
-            catch (Exception e)
-            {
-
-                throw e;
-            }
-        }
     }
 }

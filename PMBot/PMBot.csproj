@@ -138,13 +138,6 @@
     <Reference Include="Telegram.Bot, Version=10.4.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Telegram.Bot.10.4.0\lib\net45\Telegram.Bot.dll</HintPath>
     </Reference>
-    <Reference Include="VkNet, Version=1.21.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\VkNet.1.28.0\lib\net40\VkNet.dll</HintPath>
-    </Reference>
-    <Reference Include="VkNetExtend, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\VkExtend\VkNetExtend.dll</HintPath>
-    </Reference>
     <Reference Include="WebDriver, Version=3.3.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Selenium.WebDriver.3.3.0\lib\net40\WebDriver.dll</HintPath>
     </Reference>
@@ -178,6 +171,9 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="BotServices\BotService.cs" />
+    <Compile Include="Helpers\BotStarter.cs" />
+    <Compile Include="Models\LongPollServerHistory.cs" />
+    <Compile Include="Models\Message.cs" />
     <Compile Include="Controllers\BotController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\VkController.cs" />
@@ -189,6 +185,8 @@
     <Compile Include="Helpers\RemoteAuthControl.cs" />
     <Compile Include="Helpers\TelegramHelper.cs" />
     <Compile Include="Models\LongPollServerResponse.cs" />
+    <Compile Include="Models\MessagesResponse.cs" />
+    <Compile Include="Models\MessagesSendParams.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

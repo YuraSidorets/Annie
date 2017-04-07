@@ -1,19 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Web;
-using Telegram.Bot;
+﻿using Telegram.Bot;
 
 namespace PMBot.Helpers
 {
-    public static class TelegramHelper
+    public class TelegramHelper
     {
 
-        public static async void SendMessage(string message)
+        public void SendMessage(string message)
         {
-            var Bot = new TelegramBotClient("250719418:AAEmTZ1OSFGOD38UaMhHfQvy47_6MYhYcds");
-            await Bot.SendTextMessageAsync("-138805831", message);
+            var Bot = new TelegramBotClient("");
+            var res = Bot.SendTextMessageAsync("-138805831", message).Result;
         }
     }
 }
