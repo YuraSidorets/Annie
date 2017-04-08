@@ -4,11 +4,14 @@ namespace PMBot.Helpers
 {
     public class TelegramHelper
     {
-
+        /// <summary>
+        /// Message to Telegram using Bot
+        /// </summary>
+        /// <param name="message"></param>
         public void SendMessage(string message)
         {
-            var Bot = new TelegramBotClient("");
-            var res = Bot.SendTextMessageAsync("-138805831", message).Result;
+            var bot = new TelegramBotClient("");
+            var res = bot.SendTextMessageAsync("-138805831", message).Result;
         }
     }
 }

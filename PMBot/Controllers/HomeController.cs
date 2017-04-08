@@ -1,7 +1,4 @@
-﻿using System;
-using System.Web.Mvc;
-using PMBot.Helpers;
-using PMBot.BotServices;
+﻿using System.Web.Mvc;
 
 namespace PMBot.Controllers
 {

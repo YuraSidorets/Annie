@@ -5,12 +5,18 @@ namespace PMBot.Helpers
 {
     public class BotLogic
     {
-        public void Reply(Message message, int chatId, Action<MessagesSendParams> Callback)
+
+        /// <summary>
+        /// Bot phrases and funcs to reply
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="chatId"></param>
+        /// <param name="callback"></param>
+        public void Reply(Message message, int chatId, Action<MessagesSendParams> callback)
         {
-           // if(message.ChatId != 5) { return;}
             if (message.Body.ToLower().StartsWith(@"/hi"))
             {
-                Callback(new MessagesSendParams()
+                callback(new MessagesSendParams()
                 {
                     ChatId = chatId,
                     Message = "Hi i'm head of PMO of Moe Uvogenie, nice to meet you guys."
@@ -18,7 +24,7 @@ namespace PMBot.Helpers
             }
             if (message.Body.ToLower().StartsWith(@"/help"))
             {
-                Callback(new MessagesSendParams()
+                callback(new MessagesSendParams()
                 {
                     ChatId = chatId,
                     Message = "i'm still in development, so it would be great if you have some ideas to improve me.\n funcs: / anya razberi poleti\n / anya razbudi vanyu\n "
@@ -29,7 +35,7 @@ namespace PMBot.Helpers
             {
                 RazborPoldcastHelper poldcastHelper = new RazborPoldcastHelper();
                 var lastRazbor = poldcastHelper.CheckRss();
-                Callback(new MessagesSendParams()
+                callback(new MessagesSendParams()
                 {
                     ChatId = chatId,
                     Message = "Hi, here is the last post on the Razbor Poletov:\n" + lastRazbor
@@ -40,7 +46,7 @@ namespace PMBot.Helpers
             {
                 TelegramHelper telegramHelper = new TelegramHelper();
                 telegramHelper.SendMessage("Vanya you need in vk");
-                Callback(new MessagesSendParams()
+                callback(new MessagesSendParams()
                 {
                     ChatId = chatId,
                     Message = "I will message Vanya on telegram\n"

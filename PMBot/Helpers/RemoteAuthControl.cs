@@ -6,23 +6,36 @@ namespace PMBot.Helpers
 {
     public class RemoteAuthControl
     {
-        private string Email { get; set; }
-        private string Pass { get; set; }
-        private string AppID { get; set; }
-        private string Phone { get; set; }
-        public RemoteWebDriver Browser { get; }
+        private string Email { get; }
+        private string Pass { get; }
+        private string AppId { get; }
+        private string Phone { get; }
+        public  RemoteWebDriver Browser { get; }
 
-        public RemoteAuthControl(string email,string pass, string appID, string phone, Uri browserUri)
+        /// <summary>
+        /// Set parameters to login VK
+        /// </summary>
+        /// <param name="email">Vk Email</param>
+        /// <param name="pass">Vk Pass</param>
+        /// <param name="appId">Vk App ID</param>
+        /// <param name="phone">Vk phone</param>
+        /// <param name="browserUri">Remote phantom JS Browser Url</param>
+        public RemoteAuthControl(string email, string pass, string appId, string phone, Uri browserUri)
         {
             Email = email;
             Pass = pass;
-            AppID = appID;
+            AppId = appId;
             Phone = phone;
             Browser = new RemoteWebDriver(browserUri, DesiredCapabilities.PhantomJS());
         }
+
+        /// <summary>
+        /// Login to Vk
+        /// </summary>
+        /// <returns>Access token string</returns>
         public string Login()
         {
-            Browser.Navigate().GoToUrl($"https://oauth.vk.com/authorize?client_id={AppID}&display=page&redirect_uri=https://oauth.vk.com/blank.html&scope=messages&response_type=token&v=5.63");
+            Browser.Navigate().GoToUrl($"https://oauth.vk.com/authorize?client_id={AppId}&display=page&redirect_uri=https://oauth.vk.com/blank.html&scope=messages&response_type=token&v=5.63");
 
             var userNameField = Browser.FindElementByName("email");
             var userPasswordField = Browser.FindElementByName("pass");
@@ -30,12 +43,7 @@ namespace PMBot.Helpers
 
             userNameField.SendKeys(Email);
             userPasswordField.SendKeys(Pass);
-
-            var title = Browser.Title;
             loginButton.Click();
-            //var url = Browser.Url;
-            //Browser.Navigate().GoToUrl(url);
-
 
             if (!Browser.Url.Contains("access_token"))
             {
@@ -43,16 +51,16 @@ namespace PMBot.Helpers
                 {
                     //If vk proceed phone number check
                     var numberNameField = Browser.FindElementByName("code");
-                    numberNameField.SendKeys(TrimNumberForUraine(Phone));
+                    numberNameField.SendKeys(TrimNumberForUraine());
                     loginButton = Browser.FindElementByClassName("button");
                     loginButton.Click();
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
-                    //If phone number check doesn't need
+                    //If phone number check doesn't need, to suppress possible errors
                 }
             }
-            var access_token = string.Empty;
+            var accessToken = string.Empty;
             if (Browser.Url.IndexOf("access_token", StringComparison.Ordinal) != -1)
             {
                 Regex myReg = new Regex(@"(?<name>[\w\d\x5f]+)=(?<value>[^\x26\s]+)",
@@ -61,18 +69,20 @@ namespace PMBot.Helpers
                 {
                     if (m.Groups["name"].Value == "access_token")
                     {
-                        access_token = m.Groups["value"].Value;
-                       // BotServices.BotService.Authorize(0, "", "", m.Groups["value"].Value);
-                        // Task.Run(() => BotServices.BotService.ProcessMessages());
+                        accessToken = m.Groups["value"].Value;
                     }
                 }
             }
-            return access_token;
+            return accessToken;
         }
 
-        private string TrimNumberForUraine(string number)
+        /// <summary>
+        /// If phone number check provided, trim phone number
+        /// </summary>
+        /// <returns>Trimmed string to pass number check</returns>
+        private string TrimNumberForUraine()
         {
-            return number.Remove(number.Length - 2, 2).Replace("380", "");
+            return Phone.Remove(Phone.Length - 2, 2).Replace("380", "");
         }
     }
 }

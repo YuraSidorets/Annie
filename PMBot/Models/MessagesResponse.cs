@@ -1,8 +1,5 @@
 ﻿using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
 namespace PMBot.Models
 {
@@ -25,10 +22,10 @@ namespace PMBot.Models
         public int Out { get; set; }
 
         [JsonProperty("user_id")]
-        public int User_id { get; set; }
+        public int UserId { get; set; }
 
         [JsonProperty("read_state")]
-        public int Read_state { get; set; }
+        public int ReadState { get; set; }
 
         [JsonProperty("title")]
         public string Title { get; set; }
