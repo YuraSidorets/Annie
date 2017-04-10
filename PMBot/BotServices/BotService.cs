@@ -38,7 +38,7 @@ namespace PMBot.BotServices
                 if (Convert.ToString(update[0]).Equals("4"))  //4 for new message in chat
                 {
                     var actualChatId = 2000000000 - Convert.ToInt64(update[3]); //3 for chat id
-                    if (actualChatId != chat)
+                    if (-actualChatId != chat)
                     {
                         continue;
                     }
