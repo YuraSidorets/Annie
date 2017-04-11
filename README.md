@@ -16,4 +16,5 @@ https://github.com/detro/ghostdriver
 <ul>
 <li>/Beer Talks - place hh:mm:ss dd:mm:yy  -- invite friends to Beer Talks and set event in Google calendar</li>
 <li>/Film - recommend random film</li>
+<li>Page to set up the bot<li>
 </ul>
