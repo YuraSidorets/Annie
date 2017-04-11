@@ -3,7 +3,7 @@ using System.ServiceModel.Syndication;
 using System.Text;
 using System.Xml;
 
-namespace PMBot.Helpers
+namespace BotLogic
 {
     public class RazborPoldcastHelper
     {

@@ -3,13 +3,15 @@ using OpenQA.Selenium.Remote;
 using PMBot.Helpers;
 using PMBot.Models;
 using System;
+using System.Net.Http;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace PMBot.BotServices
 {
     public static class BotService
     {
         public static RemoteWebDriver Browser { get; set; }
-        private static BotLogic _botLogic = new BotLogic();
         private static LongPollServerResponse _pollServer = new LongPollServerResponse();
         public static string AccessToken { get; set; }
         private static bool _firstrun = true;
@@ -37,19 +39,40 @@ namespace PMBot.BotServices
             {
                 if (Convert.ToString(update[0]).Equals("4"))  //4 for new message in chat
                 {
-                    var actualChatId = 2000000000 - Convert.ToInt64(update[3]); //3 for chat id
-                    if (-actualChatId != chat)
+                    var actualChatId = Convert.ToInt64(update[3]) - 2000000000; //3 for chat id
+                    if (actualChatId != chat)
                     {
                         continue;
                     }
                     var message = Convert.ToString(update[6]);
                     if (Convert.ToString(update[6]).Contains("/")) //6 for text of the message
                     {
-                        _botLogic.Reply(new Message { Body = message, ChatId = chat }, chat, SendMessage);
+                        try
+                        {
+                            HttpClient client = new HttpClient();
+                            var res = RunLogicAsync(client, new Parameter { AssemblyName = "Test.dll", InvokeParameter = message });
+                            SendMessage(new MessagesSendParams { ChatId = chat, Message = Regex.Unescape(res) });
+                        }
+                        catch
+                        {
+                            SendMessage(new MessagesSendParams { ChatId = chat, Message = "я упаалаа :с" });
+                        }
+
+                        // _botLogic.Reply(new Message { Body = message, ChatId = chat }, chat, SendMessage);
                     }
                 }
             }
             ProcessMessages(history.Ts);
+        }
+
+        static string RunLogicAsync(HttpClient client, Parameter parameter)
+        {
+            HttpResponseMessage response = client.PostAsJsonAsync("http://localhost:60349/api/Plugin/Run", parameter).Result;
+            if (response.StatusCode == System.Net.HttpStatusCode.InternalServerError)
+            {
+                throw new Exception();
+            };
+            return response.Content.ReadAsStringAsync().Result;
         }
 
         /// <summary>
