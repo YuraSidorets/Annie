@@ -1,4 +1,5 @@
-﻿using PMBot.Helpers;
+﻿using System.Threading.Tasks;
+using PMBot.Helpers;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
@@ -14,7 +15,7 @@ namespace PMBot
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             //BundleConfig.RegisterBundles(BundleTable.Bundles);
 
-            BotStarter.Start();
+            Task.Factory.StartNew(BotStarter.Start);
         }
     }
 }

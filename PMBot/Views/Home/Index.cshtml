@@ -1,24 +1,97 @@
-﻿<div class="jumbotron">
-    <h1>ASP.NET</h1>
-    <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS, and JavaScript.</p>
-    <p><a href="https://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
-</div>
-<div class="row">
-    <div class="col-md-4">
-        <h2>Getting started</h2>
-        <p>ASP.NET Web API is a framework that makes it easy to build HTTP services that reach
-        a broad range of clients, including browsers and mobile devices. ASP.NET Web API
-        is an ideal platform for building RESTful applications on the .NET Framework.</p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301870">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Get more libraries</h2>
-        <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301871">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Web Hosting</h2>
-        <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301872">Learn more &raquo;</a></p>
-    </div>
-</div>
+﻿@model PMBot.Models.Config
+
+@{
+    if (Model != null)
+    {
+        <form  method="post" action="/Home/SetChatId">
+            <div class="form-group">
+                <label for="chatId">Chat ID: @Model.ChatId</label>
+                <input name="chatId" type="text" class="form-control" id="chatId">
+            </div>
+            <button type="submit" class="btn btn-default">Submit</button>
+        </form>
+
+        <form  method="post" action="/Home/SetService">
+            <div class="form-group">
+                <label for="serviceUrl">Service: @Model.ServiceUrl</label>
+                <input name="serviceUrl" type="text"  class="form-control" id="serviceUrl">
+            </div>
+            <button type="submit" class="btn btn-default">Submit</button>
+        </form>
+
+        @*<form  method="post" action="/Home/SetService">
+            <div class="form-group">
+                <label for="serviceUrl">Service: @Model.ServiceUrl</label>
+                <input type="text" class="form-control" id="serviceUrl">
+            </div>
+            <button type="submit" class="btn btn-default">Submit</button>
+        </form>*@
+
+        <form id="form1" method="post" action="@Model.ServiceUrl/Plugin/Register" enctype="multipart/form-data" onsubmit="return false">
+            <input type="hidden" name="MAX_FILE_SIZE" value="30000" />
+            <div>
+                <label>
+                    Browse Plugin File
+                </label>
+                <input name="myFile" type="file" />
+            </div>
+            <div>
+                <input type="submit" value="Upload" />
+            </div>
+        </form>
+
+        <form id="form2" method="post" action="@Model.ServiceUrl/Plugin/RegisterDependency" enctype="multipart/form-data" onsubmit="return false">
+            <input type="hidden" name="MAX_FILE_SIZE" value="30000" />
+            <div>
+                <label>
+                    Browse Dependency File
+                </label>
+                <input name="myFile" type="file" />
+            </div>
+            <div>
+                <input type="submit" value="Upload" />
+            </div>
+        </form>
+    }
+    <script src="https://code.jquery.com/jquery-3.2.1.js"
+            integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE="
+            crossorigin="anonymous"></script>
+     <script>
+            $('#form1')
+                 .submit(function (e) {
+                     $.ajax({
+                         url: '@Model.ServiceUrl/api/Plugin/Register',
+                         type: 'POST',
+                         crossDomain: true,
+                         data: new FormData(this),
+                         beforeSend: function (xhr) {
+                             xhr.setRequestHeader('Authorization', make_base_auth("yura_Sirnick", "StonerTrain"));
+                         },
+                         processData: false,
+                         contentType: false
+                     });
+                     e.preventDefault();
+                 });
+         $('#form2')
+             .submit(function (e) {
+                 $.ajax({
+                     url: '@Model.ServiceUrl/api/Plugin/RegisterDependency',
+                     type: 'POST',
+                     crossDomain: true,
+                     data: new FormData(this),
+                     beforeSend: function (xhr) {
+                         xhr.setRequestHeader('Authorization', make_base_auth("yura_Sirnick", "StonerTrain"));
+                     },
+                     processData: false,
+                     contentType: false
+                 });
+                 e.preventDefault();
+                });
+
+         function make_base_auth(user, password) {
+             var tok = user + ':' + password;
+             var hash = btoa(tok);
+             return 'Basic ' + hash;
+         }
+     </script>
+}

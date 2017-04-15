@@ -1,18 +1,55 @@
 ﻿using PMBotPluginService.Models;
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Reflection;
 using System.Web;
 using System.Web.Http;
+using System.Web.Http.Cors;
 
 namespace PMBotPluginService.Controllers
 {
     public class PluginController : ApiController
     {
         [HttpPost]
+        [EnableCors(origins: "*", headers: "*", methods: "*")]
         public void Register()
         {
-            //register plugin as {Call Name - Dll name}
+            var httpRequest = HttpContext.Current.Request;
+            HttpClient client = new HttpClient();
+            if (httpRequest.Files.Count > 0)
+            {
+                var docfiles = new List<string>();
+                foreach (string file in httpRequest.Files)
+                {
+                    var postedFile = httpRequest.Files[file];
+                    var path = HttpContext.Current.Server.MapPath("~/bin/" + postedFile?.FileName);
+                    postedFile?.SaveAs(path);
+
+                    docfiles.Add(postedFile?.FileName);
+                    client.PostAsJsonAsync(Request.Headers.Referrer.AbsoluteUri + "/Home/RegisterAssembly", docfiles);
+                }
+            }
+            else
+            {
+                client.PostAsJsonAsync(Request.Headers.Referrer.AbsolutePath + "/Home/RegisterAssembly", new List<string>());
+            }
+        }
+
+        [HttpPost]
+        [EnableCors(origins: "*", headers: "*", methods: "*")]
+        public void RegisterDependency()
+        {
+            var httpRequest = HttpContext.Current.Request;
+            if (httpRequest.Files.Count > 0)
+            {
+                foreach (string file in httpRequest.Files)
+                {
+                    var postedFile = httpRequest.Files[file];
+                    var path = HttpContext.Current.Server.MapPath("~/bin/" + postedFile?.FileName);
+                    postedFile?.SaveAs(path);
+                }
+            }
         }
 
         [HttpPost]
@@ -22,7 +59,7 @@ namespace PMBotPluginService.Controllers
 
             try
             {
-                var assembly = Assembly.LoadFile(HttpContext.Current.Server.MapPath("/Plugins/" + parameter.AssemblyName));
+                var assembly = Assembly.LoadFile(HttpContext.Current.Server.MapPath("~/bin/" + parameter.AssemblyName));
 
                 foreach (Type type in assembly.GetExportedTypes())
                 {
@@ -41,7 +78,7 @@ namespace PMBotPluginService.Controllers
                             }
                             else
                             {
-                                object[] parametersArray = new object[] { parameter.InvokeParameter };
+                                object[] parametersArray = { parameter.InvokeParameter };
 
                                 result = methodInfo.Invoke(classInstance, parametersArray);
                             }
@@ -53,7 +90,7 @@ namespace PMBotPluginService.Controllers
             {
                 return null;
             }
-            return result.ToString();
+            return result?.ToString();
         }
     }
 }

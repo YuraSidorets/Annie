@@ -1,0 +1,7 @@
+{
+  "ServiceUrl": "http://localhost:60349",
+  "ChatId": "5",
+  "Assemblies": [
+    "Test.dll"
+  ]
+}

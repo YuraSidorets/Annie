@@ -9,7 +9,7 @@ namespace PMBot.Helpers
         /// </summary>
         public static void Start()
         {
-            RemoteAuthControl authControl = new RemoteAuthControl("380967656138", "LetTheDevilIn", "5962477", "380967656138", new Uri("http://phantomjs-1.herokuapp.com"));
+            RemoteAuthControl authControl = new RemoteAuthControl("login", "pass", "appID", "phone", new Uri("remote web driver url"));
             BotService.AccessToken = authControl.Login();
             BotService.Browser = authControl.Browser;
             BotService.ProcessMessages(0);

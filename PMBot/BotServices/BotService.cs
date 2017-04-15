@@ -3,9 +3,11 @@ using OpenQA.Selenium.Remote;
 using PMBot.Helpers;
 using PMBot.Models;
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace PMBot.BotServices
 {
@@ -22,6 +24,20 @@ namespace PMBot.BotServices
         /// <param name="ts">Ts parameter from poll history response, don't need if first run </param>
         public static void ProcessMessages(int ts)
         {
+            Config config = new Config();
+            try
+            {
+
+               var configString = System.IO.File.ReadAllText(System.Web.Hosting.HostingEnvironment.MapPath("~\\config.txt"));
+                config = JsonConvert.DeserializeObject<Config>(configString);
+            }
+            catch (Exception e)
+            {
+                System.IO.File.CreateText(System.Web.Hosting.HostingEnvironment.MapPath("~\\config.txt"));
+                System.IO.File.WriteAllText(System.Web.Hosting.HostingEnvironment.MapPath("~\\config.txt"),
+                                   JsonConvert.SerializeObject(new Config(){ChatId = "5",Assemblies = new List<string>(){"Test.dll"},ServiceUrl = "http://localhost/"}, Formatting.Indented));
+            }
+
             if (_firstrun)
             {
                 _pollServer = GetLongPollServer();
@@ -34,6 +50,11 @@ namespace PMBot.BotServices
 
             var history = GetLongPollHistory(_pollServer);
             int chat = 5; //Chat ID
+
+            if (config != null)
+            {
+                chat = int.Parse(config.ChatId);
+            }
 
             foreach (var update in history.Updates)
             {
@@ -49,15 +70,17 @@ namespace PMBot.BotServices
                     {
                         try
                         {
-                            HttpClient client = new HttpClient();
-                            var res = RunLogicAsync(client, new Parameter { AssemblyName = "Test.dll", InvokeParameter = message });
-                            SendMessage(new MessagesSendParams { ChatId = chat, Message = Regex.Unescape(res) });
+                            foreach (var assembly in config.Assemblies)
+                            {
+                                HttpClient client = new HttpClient();
+                                var res = RunLogicAsync(client, new Parameter { AssemblyName = assembly, InvokeParameter = message },config.ServiceUrl);
+                                SendMessage(new MessagesSendParams { ChatId = chat, Message = res });
+                            }
                         }
                         catch
                         {
                             SendMessage(new MessagesSendParams { ChatId = chat, Message = "я упаалаа :с" });
                         }
-
                         // _botLogic.Reply(new Message { Body = message, ChatId = chat }, chat, SendMessage);
                     }
                 }
@@ -65,9 +88,9 @@ namespace PMBot.BotServices
             ProcessMessages(history.Ts);
         }
 
-        static string RunLogicAsync(HttpClient client, Parameter parameter)
+        static string RunLogicAsync(HttpClient client, Parameter parameter,string url)
         {
-            HttpResponseMessage response = client.PostAsJsonAsync("http://localhost:60349/api/Plugin/Run", parameter).Result;
+            HttpResponseMessage response = client.PostAsJsonAsync(url+ "/api/Plugin/Run", parameter).Result;
             if (response.StatusCode == System.Net.HttpStatusCode.InternalServerError)
             {
                 throw new Exception();

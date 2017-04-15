@@ -14,11 +14,18 @@ namespace PMBotPluginService
             // Web API routes
             config.MapHttpAttributeRoutes();
 
+            // New code
+            config.EnableCors();
+
             config.Routes.MapHttpRoute(
-                name: "DefaultApi",
-                routeTemplate: "api/{controller}/{action}/{id}",
-                defaults: new { id = RouteParameter.Optional }
-            );
+            name: "PluginRoute",
+            routeTemplate: "api/{controller}/{action}"
+        );
+            config.Routes.MapHttpRoute(
+                    name: "DefaultApi",
+                    routeTemplate: "api/{controller}/{id}",
+                    defaults: new { id = RouteParameter.Optional }
+                );
         }
     }
 }
