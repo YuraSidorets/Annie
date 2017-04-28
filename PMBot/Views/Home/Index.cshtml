@@ -19,14 +19,6 @@
             <button type="submit" class="btn btn-default">Submit</button>
         </form>
 
-        @*<form  method="post" action="/Home/SetService">
-            <div class="form-group">
-                <label for="serviceUrl">Service: @Model.ServiceUrl</label>
-                <input type="text" class="form-control" id="serviceUrl">
-            </div>
-            <button type="submit" class="btn btn-default">Submit</button>
-        </form>*@
-
         <form id="form1" method="post" action="@Model.ServiceUrl/Plugin/Register" enctype="multipart/form-data" onsubmit="return false">
             <input type="hidden" name="MAX_FILE_SIZE" value="30000" />
             <div>

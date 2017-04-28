@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Web.Http;
 using System.Web.Mvc;
 using Newtonsoft.Json;
@@ -9,23 +8,26 @@ namespace PMBot.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly string _configPath = System.Web.Hosting.HostingEnvironment.MapPath("~\\config.txt");
+
+        private Config GetConfig()
+        {
+           return JsonConvert.DeserializeObject<Config>(System.IO.File.ReadAllText(_configPath));
+        }
+
         public ActionResult Index()
         {
-            Config config = new Config();
-                var configString = System.IO.File.ReadAllText(Server.MapPath("~\\config.txt"));
-                config = JsonConvert.DeserializeObject<Config>(configString);
-            return View(config);
+            return View(GetConfig());
         }
 
         [System.Web.Http.HttpPost]
-        public void SetChatId( string chatId)
+        public void SetChatId(string chatId)
         {
-            var configString = System.IO.File.ReadAllText(System.Web.Hosting.HostingEnvironment.MapPath("~\\config.txt"));
-            var config = JsonConvert.DeserializeObject<Config>(configString);
+            var config = GetConfig();
             if (config != null)
             {
-                Config tmpConfig = new Config {Assemblies = config.Assemblies, ChatId = chatId, ServiceUrl = config.ServiceUrl};
-                System.IO.File.WriteAllText(Server.MapPath("~\\config.txt"),
+                Config tmpConfig = new Config { Assemblies = config.Assemblies, ChatId = chatId, ServiceUrl = config.ServiceUrl };
+                System.IO.File.WriteAllText(_configPath,
                     JsonConvert.SerializeObject(tmpConfig, Formatting.Indented));
             }
         }
@@ -33,12 +35,11 @@ namespace PMBot.Controllers
         [System.Web.Http.HttpPost]
         public void SetService(string serviceUrl)
         {
-            var configString = System.IO.File.ReadAllText(System.Web.Hosting.HostingEnvironment.MapPath("~\\config.txt"));
-            var config = JsonConvert.DeserializeObject<Config>(configString);
+            var config = GetConfig();
             if (config != null)
             {
                 Config tmpConfig = new Config { Assemblies = config.Assemblies, ChatId = config.ChatId, ServiceUrl = serviceUrl };
-                System.IO.File.WriteAllText(System.Web.Hosting.HostingEnvironment.MapPath("~\\config.txt"),
+                System.IO.File.WriteAllText(_configPath,
                     JsonConvert.SerializeObject(tmpConfig, Formatting.Indented));
             }
         }
@@ -46,14 +47,30 @@ namespace PMBot.Controllers
         [System.Web.Http.HttpPost]
         public void RegisterAssembly(List<string> files)
         {
-            var configString = System.IO.File.ReadAllText(System.Web.Hosting.HostingEnvironment.MapPath("~\\config.txt"));
-            var config = JsonConvert.DeserializeObject<Config>(configString);
+            var config = GetConfig();
             if (config != null)
             {
                 foreach (var file in files)
                 {
-                    config.Assemblies.Add(file);
+                    if (!config.Assemblies.Contains(file))
+                    {
+                        config.Assemblies.Add(file);
+                    }
                 }
+                System.IO.File.WriteAllText(_configPath,
+    JsonConvert.SerializeObject(config, Formatting.Indented));
+
+            }
+        }
+
+        [System.Web.Http.HttpPost]
+        public void SendMessage([FromBody] string message)
+        {
+            var config = GetConfig();
+            if (config != null &&  message != null)
+            {
+                var service = new BotServices.BotService();
+                service.SendMessage(new MessagesSendParams { ChatId = int.Parse(config.ChatId), Message = message });
             }
         }
     }

@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
 using PMBot.Helpers;
 using System.Web.Mvc;
-using System.Web.Optimization;
 using System.Web.Routing;
+using Elmah;
 
 namespace PMBot
 {
@@ -13,9 +13,26 @@ namespace PMBot
             AreaRegistration.RegisterAllAreas();
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
-            //BundleConfig.RegisterBundles(BundleTable.Bundles);
 
+            LaunchSeq();
+        }
+
+        void Start()
+        {
             Task.Factory.StartNew(BotStarter.Start);
+        }
+
+        void LaunchSeq()
+        {
+            try
+            {
+                Start();
+            }
+            catch (System.Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+                LaunchSeq();
+            }
         }
     }
 }

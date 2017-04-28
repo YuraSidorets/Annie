@@ -1,13 +1,12 @@
 ﻿using System.Linq;
 using System.ServiceModel.Syndication;
-using System.Text;
 using System.Xml;
 
 namespace BotLogic
 {
-    public class RazborPoldcastHelper
+    public static class RazborPoldcastHelper
     {
-        public string CheckRss()
+        public static string CheckRss()
         {
             string url = "http://feeds.feedburner.com/razbor-podcast";
 
@@ -19,10 +18,7 @@ namespace BotLogic
             if (feed != null)
             {
                 var last = feed.Items.FirstOrDefault();
-                byte[] bytes = Encoding.Default.GetBytes(last.Title.Text);
-                var text = Encoding.GetEncoding("windows-1251").GetString(bytes);
-
-                output = text + "\n" + last.PublishDate.Date.ToShortDateString() + "\n" + last.Id;
+                output = last.Title.Text + "\n" + last.PublishDate.Date.ToShortDateString() + "\n" + last.Id;
             }
             return output;
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using OpenQA.Selenium.Remote;
 using System.Text.RegularExpressions;
+using Elmah;
 
 namespace PMBot.Helpers
 {
@@ -55,8 +56,9 @@ namespace PMBot.Helpers
                     loginButton = Browser.FindElementByClassName("button");
                     loginButton.Click();
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
+                    ErrorSignal.FromCurrentContext().Raise(e);
                     //If phone number check doesn't need, to suppress possible errors
                 }
             }

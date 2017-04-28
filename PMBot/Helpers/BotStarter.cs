@@ -9,10 +9,11 @@ namespace PMBot.Helpers
         /// </summary>
         public static void Start()
         {
-            RemoteAuthControl authControl = new RemoteAuthControl("login", "pass", "appID", "phone", new Uri("remote web driver url"));
+            RemoteAuthControl authControl = new RemoteAuthControl("", "", "", "", new Uri(""));
+            BotService service = new BotService();
             BotService.AccessToken = authControl.Login();
             BotService.Browser = authControl.Browser;
-            BotService.ProcessMessages(0);
+            service.ProcessMessages(0);
         }
     }
 }

@@ -6,13 +6,14 @@ using System.Reflection;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.Cors;
+using Elmah;
 
 namespace PMBotPluginService.Controllers
 {
     public class PluginController : ApiController
     {
         [HttpPost]
-        [EnableCors(origins: "*", headers: "*", methods: "*")]
+        [EnableCors("*", "*", "*")]
         public void Register()
         {
             var httpRequest = HttpContext.Current.Request;
@@ -37,7 +38,7 @@ namespace PMBotPluginService.Controllers
         }
 
         [HttpPost]
-        [EnableCors(origins: "*", headers: "*", methods: "*")]
+        [EnableCors("*", "*", "*")]
         public void RegisterDependency()
         {
             var httpRequest = HttpContext.Current.Request;
@@ -53,7 +54,7 @@ namespace PMBotPluginService.Controllers
         }
 
         [HttpPost]
-        public string Run(Parameter parameter)
+        public HttpResponseMessage Run(Parameter parameter)
         {
             object result = null;
 
@@ -86,11 +87,15 @@ namespace PMBotPluginService.Controllers
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                ErrorSignal.FromCurrentContext().Raise(e);
                 return null;
             }
-            return result?.ToString();
+            return new HttpResponseMessage()
+            {
+                Content = new StringContent(result?.ToString(), System.Text.Encoding.UTF8, "text/html")
+            }; 
         }
     }
 }
