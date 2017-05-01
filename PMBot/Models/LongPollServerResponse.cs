@@ -4,7 +4,6 @@ namespace PMBot.Models
 {
     public class LongPollServerResponse
     {
-
         [JsonProperty("response")]
         public ServerHistoryResponse Response { get; set; }
     }
@@ -19,10 +18,10 @@ namespace PMBot.Models
         public string Server { get; set; }
 
         [JsonProperty("ts")]
-        public int Ts { get; set; }
+        public int? Ts { get; set; }
 
         [JsonProperty("pts")]
-        public int Pts { get; set; }
+        public int? Pts { get; set; }
     }
 
 }

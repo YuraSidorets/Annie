@@ -1,7 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Web.Http;
 using System.Web.Mvc;
+using Elmah;
 using Newtonsoft.Json;
+using PMBot.BotServices;
+using PMBot.Helpers;
 using PMBot.Models;
 
 namespace PMBot.Controllers
@@ -66,11 +70,17 @@ namespace PMBot.Controllers
         [System.Web.Http.HttpPost]
         public void SendMessage([FromBody] string message)
         {
-            var config = GetConfig();
-            if (config != null &&  message != null)
+            try
             {
-                var service = new BotServices.BotService();
-                service.SendMessage(new MessagesSendParams { ChatId = int.Parse(config.ChatId), Message = message });
+                var config = GetConfig();
+                if (config != null && message != null)
+                {
+                    BotService.GetInstance(email, pass, appID, phone, webDriver)).SendMessage(new MessagesSendParams { ChatId = int.Parse(config.ChatId), Message = message });
+                }
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
             }
         }
     }

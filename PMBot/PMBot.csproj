@@ -169,7 +169,8 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="BotServices\BotService.cs" />
-    <Compile Include="Helpers\BotStarter.cs" />
+    <Compile Include="Helpers\LongPoolWatcher.cs" />
+    <Compile Include="Helpers\VKController.cs" />
     <Compile Include="Models\Config.cs" />
     <Compile Include="Models\LongPollServerHistory.cs" />
     <Compile Include="Models\Message.cs" />

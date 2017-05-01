@@ -1,99 +1,40 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
 using OpenQA.Selenium.Remote;
+using PMBot.Helpers;
 using PMBot.Models;
-using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using Elmah;
 
 namespace PMBot.BotServices
 {
     public class BotService
     {
+        private static BotService instance;
+        private static object syncRoot = new Object();
+
         public static RemoteWebDriver Browser { get; set; }
-        private  LongPollServerResponse _pollServer = new LongPollServerResponse();
         public static string AccessToken { get; set; }
-        private bool _firstrun = true;
-        private readonly string _configPath = System.Web.Hosting.HostingEnvironment.MapPath("~\\config.txt");
 
-        /// <summary>
-        /// Start Message Processing
-        /// </summary>
-        /// <param name="ts">Ts parameter from poll history response, don't need if first run </param>
-        public void ProcessMessages(int ts)
+        public static BotService GetInstance(string login, string pass, string appID, string phone, Uri remoteWebDriver)
         {
-            Config config = new Config();
-            try
+            if (instance == null)
             {
-                var configString = System.IO.File.ReadAllText(_configPath);
-                config = JsonConvert.DeserializeObject<Config>(configString);
-            }
-            catch (Exception e)
-            {
-                ErrorSignal.FromCurrentContext().Raise(e);
-                System.IO.File.CreateText(_configPath);
-                System.IO.File.WriteAllText(_configPath, JsonConvert.SerializeObject(new Config(){ChatId = "5",Assemblies = new List<string>(){"Test.dll"},ServiceUrl = "http://localhost/"}, Formatting.Indented));
-            }
-
-            if (_firstrun)
-            {
-                _pollServer = GetLongPollServer();
-                _firstrun = false;
-            }
-            else
-            {
-                _pollServer.Response.Ts = ts;
-            }
-
-            var history = GetLongPollHistory(_pollServer);
-            int chat = 5; //Chat ID
-
-            if (config != null)
-            {
-                chat = int.Parse(config.ChatId);
-            }
-
-            foreach (var update in history.Updates)
-            {
-                if (Convert.ToString(update[0]).Equals("4"))  //4 for new message in chat
+                lock (syncRoot)
                 {
-                    var actualChatId = Convert.ToInt64(update[3]) - 2000000000; //3 for chat id
-                    if (actualChatId != chat)
-                    {
-                        continue;
-                    }
-                    var message = Convert.ToString(update[6]);
-                    if (Convert.ToString(update[6]).Contains("/")) //6 for text of the message
-                    {
-                        try
-                        {
-                            foreach (var assembly in config.Assemblies)
-                            {
-                                HttpClient client = new HttpClient();
-                                var res = RunLogicAsync(client, new Parameter { AssemblyName = assembly, InvokeParameter = message },config.ServiceUrl);
-                                SendMessage(new MessagesSendParams { ChatId = chat, Message = res });
-                            }
-                        }
-                        catch(Exception e)
-                        {
-                            ErrorSignal.FromCurrentContext().Raise(e);
-                            SendMessage(new MessagesSendParams { ChatId = chat, Message = "я упаалаа :с" });
-                        }
-                        // _botLogic.Reply(new Message { Body = message, ChatId = chat }, chat, SendMessage);
-                    }
+                    if (instance == null)
+                        instance = new BotService(login, pass, appID, phone, remoteWebDriver);
                 }
             }
-            ProcessMessages(history.Ts);
+            return instance;
         }
 
-        private string RunLogicAsync(HttpClient client, Parameter parameter,string url)
+        protected BotService(string login, string pass, string appID, string phone, Uri remoteWebDriver)
         {
-            HttpResponseMessage response = client.PostAsJsonAsync(url+ "/api/Plugin/Run", parameter).Result;
-            if (response.StatusCode == System.Net.HttpStatusCode.InternalServerError)
+            if (Browser == null || AccessToken == null)
             {
-                throw new Exception("Run bot logic failure");
-            };
-            return response.Content.ReadAsStringAsync().Result;
+                RemoteAuthControl authControl = new RemoteAuthControl(login, pass, appID, phone, remoteWebDriver);
+                AccessToken = authControl.Login();
+                Browser = authControl.Browser;
+            }
         }
 
         /// <summary>

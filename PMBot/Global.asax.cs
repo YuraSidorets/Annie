@@ -1,8 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using PMBot.Helpers;
 using System.Web.Mvc;
 using System.Web.Routing;
 using Elmah;
+using PMBot.BotServices;
 
 namespace PMBot
 {
@@ -19,7 +21,9 @@ namespace PMBot
 
         void Start()
         {
-            Task.Factory.StartNew(BotStarter.Start);
+            var controller =
+                new VKController(BotService.GetInstance(email, pass, appID, phone, webDriver)));
+            Task.Factory.StartNew(() => controller.StartLongPoolWatch());
         }
 
         void LaunchSeq()
