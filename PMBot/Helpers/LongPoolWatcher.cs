@@ -8,11 +8,11 @@ using PMBot.Models;
 
 namespace PMBot.Helpers
 {
-    public delegate void MessagesRecievedDelegate(BotService owner, IList<IList<object>> messages);
+    public delegate void MessagesRecievedDelegate(VkService owner, IList<IList<object>> messages);
 
     public class LongPoolWatcher
     {
-        private BotService _account;
+        private VkService _account;
 
         private int? Ts { get; set; }
         private int? Pts { get; set; }
@@ -31,7 +31,7 @@ namespace PMBot.Helpers
 
         public event MessagesRecievedDelegate NewMessages;
 
-        public LongPoolWatcher(BotService api)
+        public LongPoolWatcher(VkService api)
         {
             _account = api;
         }

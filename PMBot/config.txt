@@ -1,4 +1,9 @@
 {
+  "Login":"",
+  "Pass":"",
+  "Phone":"",
+  "AppId":"",
+  "WebDriver":"",
   "ServiceUrl": "http://localhost:60349",
   "ChatId": "5",
   "Assemblies": [

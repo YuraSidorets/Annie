@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Web.Http;
 using System.Web.Mvc;
 using Elmah;
-using Newtonsoft.Json;
 using PMBot.BotServices;
 using PMBot.Helpers;
 using PMBot.Models;
@@ -12,46 +11,37 @@ namespace PMBot.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly string _configPath = System.Web.Hosting.HostingEnvironment.MapPath("~\\config.txt");
-
-        private Config GetConfig()
-        {
-           return JsonConvert.DeserializeObject<Config>(System.IO.File.ReadAllText(_configPath));
-        }
-
         public ActionResult Index()
         {
-            return View(GetConfig());
+            return View(ConfigHelper.GetConfig());
         }
 
         [System.Web.Http.HttpPost]
         public void SetChatId(string chatId)
         {
-            var config = GetConfig();
+            var config = ConfigHelper.GetConfig();
             if (config != null)
             {
                 Config tmpConfig = new Config { Assemblies = config.Assemblies, ChatId = chatId, ServiceUrl = config.ServiceUrl };
-                System.IO.File.WriteAllText(_configPath,
-                    JsonConvert.SerializeObject(tmpConfig, Formatting.Indented));
+                ConfigHelper.SetConfig(tmpConfig);
             }
         }
 
         [System.Web.Http.HttpPost]
         public void SetService(string serviceUrl)
         {
-            var config = GetConfig();
+            var config = ConfigHelper.GetConfig();
             if (config != null)
             {
                 Config tmpConfig = new Config { Assemblies = config.Assemblies, ChatId = config.ChatId, ServiceUrl = serviceUrl };
-                System.IO.File.WriteAllText(_configPath,
-                    JsonConvert.SerializeObject(tmpConfig, Formatting.Indented));
+                ConfigHelper.SetConfig(tmpConfig);
             }
         }
 
         [System.Web.Http.HttpPost]
         public void RegisterAssembly(List<string> files)
         {
-            var config = GetConfig();
+            var config = ConfigHelper.GetConfig();
             if (config != null)
             {
                 foreach (var file in files)
@@ -61,8 +51,7 @@ namespace PMBot.Controllers
                         config.Assemblies.Add(file);
                     }
                 }
-                System.IO.File.WriteAllText(_configPath,
-    JsonConvert.SerializeObject(config, Formatting.Indented));
+                ConfigHelper.SetConfig(config);
 
             }
         }
@@ -72,10 +61,10 @@ namespace PMBot.Controllers
         {
             try
             {
-                var config = GetConfig();
+                var config = ConfigHelper.GetConfig();
                 if (config != null && message != null)
                 {
-                    BotService.GetInstance(email, pass, appID, phone, webDriver)).SendMessage(new MessagesSendParams { ChatId = int.Parse(config.ChatId), Message = message });
+                    VkService.GetInstance(config.Login, config.Pass, config.AppId, config.Phone, new Uri(config.WebDriver)).SendMessage(new MessagesSendParams { ChatId = int.Parse(config.ChatId), Message = message });
                 }
             }
             catch (Exception e)

@@ -21,8 +21,8 @@ namespace PMBot
 
         void Start()
         {
-            var controller =
-                new VKController(BotService.GetInstance(email, pass, appID, phone, webDriver)));
+            var config = ConfigHelper.GetConfig();
+            var controller = new VkController(VkService.GetInstance(config.Login, config.Pass, config.AppId, config.Phone, new Uri(config.WebDriver)));
             Task.Factory.StartNew(() => controller.StartLongPoolWatch());
         }
 
@@ -32,7 +32,7 @@ namespace PMBot
             {
                 Start();
             }
-            catch (System.Exception e)
+            catch (Exception e)
             {
                 ErrorSignal.FromCurrentContext().Raise(e);
                 LaunchSeq();
